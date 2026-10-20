@@ -1,1 +1,33 @@
-/* Habit Tracker styles (coming soon) */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 0 16px;
+    background: #f4f1fb;
+    color: #2d2a3e;
+}
+
+h1 {
+    color: #6c4ad6;
+}
+
+button {
+    background: #6c4ad6;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #5835c4;
+}
+
+.ok {
+    color: #1e8e4e;
+}
+
+.error {
+    color: #c62828;
+}

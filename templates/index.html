@@ -1,1 +1,31 @@
-<!-- Habit Tracker - main page (code coming soon) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Habit Tracker</h1>
+    <p>Track your daily habits and keep your streak going.</p>
+
+    <button onclick="checkDb()">Check database</button>
+    <p id="db-status"></p>
+
+    <script>
+        async function checkDb() {
+            const status = document.getElementById("db-status");
+            try {
+                const res = await fetch("/health");
+                const data = await res.json();
+                status.textContent = "Database: " + data.db;
+                status.className = res.ok ? "ok" : "error";
+            } catch (e) {
+                status.textContent = "Server is not responding";
+                status.className = "error";
+            }
+        }
+    </script>
+</body>
+</html>
