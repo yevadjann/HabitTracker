@@ -82,5 +82,28 @@ def create_habit():
     return jsonify(habit.to_dict()), 201
 
 
+@app.route("/api/habits/<int:habit_id>", methods=["PATCH"])
+def rename_habit(habit_id):
+    habit = db.session.get(Habit, habit_id)
+    if habit is None:
+        return error("Habit not found", 404)
+    name = clean_name(request.get_json(silent=True))
+    if name is None:
+        return error("Name must be 1-100 characters", 400)
+    habit.name = name
+    db.session.commit()
+    return jsonify(habit.to_dict())
+
+
+@app.route("/api/habits/<int:habit_id>", methods=["DELETE"])
+def delete_habit(habit_id):
+    habit = db.session.get(Habit, habit_id)
+    if habit is None:
+        return error("Habit not found", 404)
+    db.session.delete(habit)
+    db.session.commit()
+    return "", 204
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
