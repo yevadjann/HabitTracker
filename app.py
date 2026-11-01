@@ -105,5 +105,29 @@ def delete_habit(habit_id):
     return "", 204
 
 
+@app.route("/api/habits/<int:habit_id>/toggle", methods=["POST"])
+def toggle_day(habit_id):
+    habit = db.session.get(Habit, habit_id)
+    if habit is None:
+        return error("Habit not found", 404)
+    data = request.get_json(silent=True)
+    raw = data.get("day") if isinstance(data, dict) else None
+    try:
+        day = datetime.strptime(raw, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        return error("Invalid date", 400)
+    # The browser decides what "today" is; allow 1 day of difference for time zones
+    if abs((day - utc_today()).days) > 1:
+        return error("Only today can be changed", 400)
+
+    log = HabitLog.query.filter_by(habit_id=habit.id, day=day).first()
+    if log:
+        db.session.delete(log)
+    else:
+        db.session.add(HabitLog(habit_id=habit.id, day=day))
+    db.session.commit()
+    return jsonify(day=day.isoformat(), done=log is None)
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
