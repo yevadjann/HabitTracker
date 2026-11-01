@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from models import COLORS, Habit, HabitLog, db
 
@@ -49,6 +50,12 @@ def clean_name(data):
         return None
     name = name.strip()
     return name if 1 <= len(name) <= 100 else None
+
+
+@app.errorhandler(SQLAlchemyError)
+def database_error(e):
+    db.session.rollback()
+    return error(str(e).splitlines()[0], 500)
 
 
 @app.route("/")
@@ -130,4 +137,10 @@ def toggle_day(habit_id):
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        try:
+            setup_database()
+        except Exception as e:
+            # Start anyway so /health can report the problem
+            print(f"Database setup skipped: {e}")
     app.run(host="0.0.0.0", port=5000)
