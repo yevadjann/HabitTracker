@@ -4,28 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habit Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Habit Tracker</h1>
-    <p>Track your daily habits and keep your streak going.</p>
+<div class="wrap">
+    <header class="topbar">
+        <a class="brand" href="/">
+            <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            habit<b>/</b>tracker
+        </a>
+        <div class="pill"><span class="dot" id="live-dot"></span><span id="live-text">checking…</span></div>
+    </header>
 
-    <button onclick="checkDb()">Check database</button>
-    <p id="db-status"></p>
+    <section class="hero">
+        <p class="eyebrow reveal" style="--d:0">&gt; <span id="today-date"></span></p>
+        <h1 class="reveal" style="--d:1">Build habits<br>that <span class="glow">glow.</span></h1>
+        <p class="lead reveal" style="--d:2">Track your daily habits and keep your streak going.</p>
+    </section>
 
-    <script>
-        async function checkDb() {
-            const status = document.getElementById("db-status");
-            try {
-                const res = await fetch("/health");
-                const data = await res.json();
-                status.textContent = "Database: " + data.db;
-                status.className = res.ok ? "ok" : "error";
-            } catch (e) {
-                status.textContent = "Server is not responding";
-                status.className = "error";
-            }
-        }
-    </script>
+    <section class="stats reveal" style="--d:3">
+        <div class="panel stat"><b id="s-streak">0</b><span class="label">best streak</span></div>
+        <div class="panel stat"><b id="s-done">0%</b><span class="label">done · last 20 days</span></div>
+        <div class="panel stat"><b id="s-count">0</b><span class="label">habits</span></div>
+    </section>
+
+    <form class="panel add reveal" style="--d:4" id="add-form">
+        <input id="add-input" maxlength="100" placeholder="New habit, e.g. Drink water" autocomplete="off">
+        <button class="btn btn-lime" type="submit">+ Add habit</button>
+    </form>
+
+    <section class="cards" id="cards"></section>
+
+    <section class="panel terminal">
+        <div class="terminal-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+        <p><span class="prompt">$</span> GET /health</p>
+        <p>&rarr; <span id="db-status">database: not checked yet</span></p>
+        <button class="btn btn-ghost" onclick="checkDb()">Check database</button>
+    </section>
+
+    <footer class="footer">
+        <span>habit/tracker</span>
+        <span>Flask · PostgreSQL · Docker · Azure</span>
+    </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
